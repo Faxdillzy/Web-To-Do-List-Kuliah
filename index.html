@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KuliahKuy!</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="img/Icon Kuliah.jpeg" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fa-solid fa-award"></i>
+                    <h1> KuliahKuy! </h1>
+                </div>
+                <div class="date-display">
+                    <span id="current-date"> Senin, 22 September 2025 </span>
+                </div>    
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- Kolom Untuk Menambahkan Tugas -->
+            <div>
+                <div class="section">
+                    <h2 class="section-title"><i class="fa-solid fa-circle-plus"></i> Tambah Tugas Baru Anda </h2>
+                    <form id="task-form">
+                        <div class="form-group">
+                            <label for="task-title"> Nama Tugas </label>
+                            <input type="text" id="task-title" class="form-control" placeholder="Isi Tugas Anda Hari Ini" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-due"> Deadline </label>
+                            <input type="datetime-local" id="task-due" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-desc"> Deskripsi </label>
+                            <textarea id="task-desc" class="form-control" rows="3" placeholder="Detail tugas..."></textarea>
+                        </div>
+                        <button type="sumbit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah Tugas </button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title"><i class="fa-solid fa-list-check"></i> Daftar Tugas Anda </h2>
+                    <ul class="task-list" id="task-list">
+                        <!-- Tugas akan ditambahkan di sini secara dinamis -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Kolom Jadwal Kuliah -->
+            <div>
+                <div class="section">
+                    <h2 class="section-title"><i class="fa-solid fa-calendar-days"></i> Tambahkan Jadwal Kuliah </h2>
+                    <form id="schedule-form">
+                        <div class="form-group">
+                            <label for="schedule-title"> Nama Mata Kuliah </label>
+                            <input type="text" id="schedule-title" class="form-control" placeholder="Tambah Mata Kuliah" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schedule-day"> Hari </label>
+                            <select id="schedule-day" class="form-control" required>
+                                <option value="">Pilih Hari</option>
+                                <option value="Senin">Senin</option>
+                                <option value="Selasa">Selasa</option>
+                                <option value="Rabu">Rabu</option>
+                                <option value="Kamis">Kamis</option>
+                                <option value="Jumat">Jumat</option>
+                                <option value="Sabtu">Sabtu</option>
+                                <option value="Minggu">Minggu</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="schedule-time"> Waktu </label>
+                            <input type="time" id="schedule-time" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah Jadwal Kuliah </button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title"><i class="fa-solid fa-calendar-days"></i> Jadwal Kuliah Anda </h2>
+                    <div class="schedule-list" id="schedule-list">
+                        <!-- Jadwal kuliah akan ditambahkan di sini secara dinamis -->
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title"><i class="fa-solid fa-chart-pie"></i> Stats Tugas </h2>
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <h3> Total Semua Tugas </h3>
+                            <div class="stat-value" id="total-tasks">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3> Tugas Selesai </h3>
+                            <div class="stat-value" id="completed-tasks">0</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="task-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 KuliahKuy! - To-Do List Kuliah. Dibuat dengan <i class="fas fa-bug" style="color: #6366f1;"></i> oleh Fadillah Aryaseto</p>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
