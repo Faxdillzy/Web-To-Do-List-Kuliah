@@ -1,16 +1,51 @@
-// Data contoh untuk demonstrasi
-        let tasks = [
-            { id: 1, title: 'Tugas Matematika Diskrit', due: '2023-08-22T23:59', desc: 'Kerjakan soal halaman 45-50', completed: false },
-            { id: 2, title: 'Proyek Pemrograman Web', due: '2023-08-25T23:59', desc: 'Buat website to-do list', completed: false },
-            { id: 3, title: 'Laporan Fisika', due: '2023-08-21T10:00', desc: 'Praktikum hukum Ohm', completed: false }
-        ];
+// ==================== LOCAL STORAGE FUNCTIONS ====================
+        
+        // Simpan data ke Local Storage
+        function saveToLocalStorage() {
+            const data = {
+                tasks: tasks,
+                schedules: schedules,
+                lastSaved: new Date().toISOString()
+            };
+            
+            localStorage.setItem('edutrack_data', JSON.stringify(data));
+            showSaveNotification();
+        }
 
-        let schedules = [
-            { id: 1, title: 'Pemrograman Web', day: 'Senin', time: '08:00' },
-            { id: 2, title: 'Matematika Diskrit', day: 'Selasa', time: '10:00' },
-            { id: 3, title: 'Basis Data', day: 'Rabu', time: '13:00' },
-            { id: 4, title: 'Jaringan Komputer', day: 'Kamis', time: '15:00' }
-        ];
+        // Load data dari Local Storage
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('edutrack_data');
+            
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    tasks = data.tasks || [];
+                    schedules = data.schedules || [];
+                    
+                    console.log('Data berhasil dimuat dari Local Storage');
+                } catch (error) {
+                    console.error('Error loading data from localStorage:', error);
+                    tasks = [];
+                    schedules = [];
+                }
+            }
+        }
+
+        // ==================== NOTIFICATION ====================
+        
+        function showSaveNotification() {
+            const notification = document.getElementById('saveNotification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // ==================== DATA MANAGEMENT ====================
+        
+        let tasks = [];
+        let schedules = [];
 
         // Elemen DOM
         const taskForm = document.getElementById('task-form');
@@ -57,13 +92,21 @@
                 taskList.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-clipboard-list"></i>
-                        <p>Belum ada tugas. Yuk tambahkan tugas baru!</p>
+                        <p>Belum ada tugas. Gaskeun tambahin tugas barunya!</p>
                     </div>
                 `;
                 return;
             }
             
-            tasks.forEach(task => {
+            // Urutkan tugas: belum selesai dulu, lalu berdasarkan deadline
+            const sortedTasks = [...tasks].sort((a, b) => {
+                if (a.completed !== b.completed) {
+                    return a.completed ? 1 : -1;
+                }
+                return new Date(a.due) - new Date(b.due);
+            });
+            
+            sortedTasks.forEach(task => {
                 const taskItem = document.createElement('li');
                 taskItem.className = `task-item fade-in ${task.completed ? 'completed' : ''}`;
                 
@@ -97,19 +140,32 @@
                 scheduleList.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
-                        <p>Belum ada jadwal. Tambahkan jadwal kuliahmu!</p>
+                        <p>Belum ada jadwal. Gaskeun tambahin jadwal barunya!</p>
                     </div>
                 `;
                 return;
             }
             
-            schedules.forEach(schedule => {
+            // Urutkan jadwal berdasarkan hari dan waktu
+            const dayOrder = { 'Senin': 1, 'Selasa': 2, 'Rabu': 3, 'Kamis': 4, 'Jumat': 5, 'Sabtu': 6, 'Minggu': 7 };
+            const sortedSchedules = [...schedules].sort((a, b) => {
+                if (a.day !== b.day) {
+                    return dayOrder[a.day] - dayOrder[b.day];
+                }
+                return a.time.localeCompare(b.time);
+            });
+            
+            sortedSchedules.forEach(schedule => {
                 const scheduleItem = document.createElement('div');
                 scheduleItem.className = 'schedule-item fade-in';
                 
                 scheduleItem.innerHTML = `
-                    <h3>${schedule.title} <button class="task-btn delete" onclick="deleteSchedule(${schedule.id})"><i class="fas fa-trash"></i></button></h3>
-                    <p><i class="far fa-calendar"></i> ${schedule.day}, ${formatTime(schedule.time)}</p>
+                    <h3>${schedule.title} 
+                        <button class="task-btn delete" onclick="deleteSchedule(${schedule.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </h3>
+                    <p><i class="far fa-calendar"></i> ${schedule.day}, ${schedule.time}</p>
                 `;
                 
                 scheduleList.appendChild(scheduleItem);
@@ -168,58 +224,23 @@
             });
         }
 
-        // Tambah tugas baru
-        taskForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const title = document.getElementById('task-title').value;
-            const due = document.getElementById('task-due').value;
-            const desc = document.getElementById('task-desc').value;
-            
+        // ==================== TASK FUNCTIONS ====================
+        
+        function addTask(title, due, desc) {
             const newTask = {
                 id: Date.now(),
                 title,
                 due,
                 desc,
-                completed: false
+                completed: false,
+                createdAt: new Date().toISOString()
             };
             
             tasks.push(newTask);
             renderTasks();
-            
-            // Reset form
-            taskForm.reset();
-            
-            // Notifikasi
-            alert('Tugas berhasil ditambahkan!');
-        });
+            saveToLocalStorage(); // Simpan ke Local Storage
+        }
 
-        // Tambah jadwal baru
-        scheduleForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const title = document.getElementById('schedule-title').value;
-            const day = document.getElementById('schedule-day').value;
-            const time = document.getElementById('schedule-time').value;
-            
-            const newSchedule = {
-                id: Date.now(),
-                title,
-                day,
-                time
-            };
-            
-            schedules.push(newSchedule);
-            renderSchedules();
-            
-            // Reset form
-            scheduleForm.reset();
-            
-            // Notifikasi
-            alert('Jadwal berhasil ditambahkan!');
-        });
-
-        // Toggle status tugas
         function toggleTask(id) {
             tasks = tasks.map(task => {
                 if (task.id === id) {
@@ -229,27 +250,116 @@
             });
             
             renderTasks();
+            saveToLocalStorage(); // Simpan ke Local Storage
         }
 
-        // Hapus tugas
         function deleteTask(id) {
             if (confirm('Apakah Anda yakin ingin menghapus tugas ini?')) {
                 tasks = tasks.filter(task => task.id !== id);
                 renderTasks();
+                saveToLocalStorage(); // Simpan ke Local Storage
             }
         }
 
-        // Hapus jadwal
+        function clearCompletedTasks() {
+            if (confirm('Hapus semua tugas yang sudah selesai?')) {
+                tasks = tasks.filter(task => !task.completed);
+                renderTasks();
+                saveToLocalStorage(); // Simpan ke Local Storage
+            }
+        }
+
+        function clearAllTasks() {
+            if (confirm('Hapus SEMUA tugas? Tindakan ini tidak dapat dibatalkan!')) {
+                tasks = [];
+                renderTasks();
+                saveToLocalStorage(); // Simpan ke Local Storage
+            }
+        }
+
+        // ==================== SCHEDULE FUNCTIONS ====================
+        
+        function addSchedule(title, day, time) {
+            const newSchedule = {
+                id: Date.now(),
+                title,
+                day,
+                time,
+                createdAt: new Date().toISOString()
+            };
+            
+            schedules.push(newSchedule);
+            renderSchedules();
+            saveToLocalStorage(); // Simpan ke Local Storage
+        }
+
         function deleteSchedule(id) {
             if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
                 schedules = schedules.filter(schedule => schedule.id !== id);
                 renderSchedules();
+                saveToLocalStorage(); // Simpan ke Local Storage
             }
         }
 
-        // Inisialisasi
+        function clearAllSchedules() {
+            if (confirm('Hapus SEMUA jadwal? Tindakan ini tidak dapat dibatalkan!')) {
+                schedules = [];
+                renderSchedules();
+                saveToLocalStorage(); // Simpan ke Local Storage
+            }
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        
+        taskForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('task-title').value;
+            const due = document.getElementById('task-due').value;
+            const desc = document.getElementById('task-desc').value;
+            
+            addTask(title, due, desc);
+            this.reset();
+        });
+
+        scheduleForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('schedule-title').value;
+            const day = document.getElementById('schedule-day').value;
+            const time = document.getElementById('schedule-time').value;
+            
+            addSchedule(title, day, time);
+            this.reset();
+        });
+
+        // ==================== AUTO-SAVE FEATURE ====================
+        
+        // Simpan otomatis setiap 30 detik (fallback)
+        setInterval(() => {
+            if (tasks.length > 0 || schedules.length > 0) {
+                saveToLocalStorage();
+            }
+        }, 30000);
+
+        // Simpan saat user meninggalkan halaman
+        window.addEventListener('beforeunload', () => {
+            if (tasks.length > 0 || schedules.length > 0) {
+                saveToLocalStorage();
+            }
+        });
+
+        // ==================== INITIALIZATION ====================
+        
         document.addEventListener('DOMContentLoaded', function() {
+            // Load data dari Local Storage saat halaman dimuat
+            loadFromLocalStorage();
+            
+            // Render data yang telah diload
             renderTasks();
             renderSchedules();
             updateStats();
+            
+            console.log('Aplikasi EduTrack siap digunakan!');
+            console.log('Data akan disimpan otomatis di browser Anda');
         });
