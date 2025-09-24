@@ -10,16 +10,27 @@
     <link rel="icon" href="img/Icon Kuliah.jpeg" type="image/x-icon">
 </head>
 <body>
+    <!-- Notifikasi untuk auto-save -->
+    <div class="save-notification" id="save-notification">
+        <i class="fa-check-circle"></i> Perubahan Tersimpan Otomatis!
+    </div>
+
     <header>
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <i class="fa-solid fa-award"></i>
-                    <h1> KuliahKuy! </h1>
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <h1> KuliahKuy!</h1>
+                        <p> To-Do List & Jadwal Kuliah </p>
+                    </div>
                 </div>
                 <div class="date-display">
-                    <span id="current-date"> Senin, 22 September 2025 </span>
-                </div>    
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="current-date"> Rabu, 24 September 2025 </span>
+                </div>
             </div>
         </div>
     </header>
@@ -114,7 +125,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 KuliahKuy! - To-Do List Kuliah. Dibuat dengan <i class="fas fa-bug" style="color: #6366f1;"></i> oleh Fadillah Aryaseto</p>
+            <p>&copy; 2025 KuliahKuy! - To-Do List Kuliah. Dibuat dengan <i class="fa-solid fa-gears" style="color: #6366f1;"></i> oleh Fadillah Aryaseto</p>
         </div>
     </footer>
     <script src="script.js"></script>
